@@ -1,97 +1,103 @@
-import React, {useState} from 'react';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {NavigationContainer} from '@react-navigation/native';
+import * as React from 'react';
+import {StatusBar, StatusBarStyle, StyleSheet, View} from 'react-native';
 import {
-  Button,
-  Platform,
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import type {StatusBarStyle} from 'react-native';
+    Button,
+    MD3LightTheme as DefaultTheme,
+    PaperProvider,
+    TextInput,
+} from 'react-native-paper';
 
-const STYLES = ['default', 'dark-content', 'light-content'] as const;
-const TRANSITIONS = ['fade', 'slide', 'none'] as const;
+import TripForm from './components/TripForm';
 
-const App = () => {
-  const [hidden, setHidden] = useState(false);
-  const [statusBarStyle, setStatusBarStyle] = useState<StatusBarStyle>(
-    STYLES[0],
-  );
-  const [statusBarTransition, setStatusBarTransition] = useState<
-    'fade' | 'slide' | 'none'
-  >(TRANSITIONS[0]);
-
-  const changeStatusBarVisibility = () => setHidden(!hidden);
-
-  const changeStatusBarStyle = () => {
-    const styleId = STYLES.indexOf(statusBarStyle) + 1;
-    if (styleId === STYLES.length) {
-      setStatusBarStyle(STYLES[0]);
-    } else {
-      setStatusBarStyle(STYLES[styleId]);
-    }
-  };
-
-  const changeStatusBarTransition = () => {
-    const transition = TRANSITIONS.indexOf(statusBarTransition) + 1;
-    if (transition === TRANSITIONS.length) {
-      setStatusBarTransition(TRANSITIONS[0]);
-    } else {
-      setStatusBarTransition(TRANSITIONS[transition]);
-    }
-  };
-
-  return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar
-        animated={true}
-        backgroundColor="#61dafb"
-        barStyle={statusBarStyle}
-        showHideTransition={statusBarTransition}
-        hidden={hidden}
-      />
-      <Text style={styles.textStyle}>
-        StatusBar Visibility:{'\n'}
-        {hidden ? 'Hidden' : 'Visible'}
-      </Text>
-      <Text style={styles.textStyle}>
-        StatusBar Style:{'\n'}
-        {statusBarStyle}
-      </Text>
-      {Platform.OS === 'ios' ? (
-        <Text style={styles.textStyle}>
-          StatusBar Transition:{'\n'}
-          {statusBarTransition}
-        </Text>
-      ) : null}
-      <View style={styles.buttonsContainer}>
-        <Button title="Toggle StatusBar" onPress={changeStatusBarVisibility} />
-        <Button title="Change StatusBar Style" onPress={changeStatusBarStyle} />
-        {Platform.OS === 'ios' ? (
-          <Button
-            title="Change StatusBar Transition"
-            onPress={changeStatusBarTransition}
-          />
-        ) : null}
-      </View>
-    </SafeAreaView>
-  );
+const theme = {
+    ...DefaultTheme,
+    colors: {
+        ...DefaultTheme.colors,
+        primary: '#f080a0',
+        secondary: '#f5f850',
+    },
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    backgroundColor: '#ECF0F1',
-  },
-  buttonsContainer: {
-    padding: 10,
-  },
-  textStyle: {
-    textAlign: 'center',
-    marginBottom: 8,
-  },
+const Nav = createBottomTabNavigator();
+
+const tabIcons = {
+    home: ['ios-home', 'ios-home-outline'],
+    other: ['ios-car', 'ios-car-outline'],
+};
+
+const getScreenOptions = ({route}) => ({
+    tabBarIcon: ({focused, color, size}) => (
+        <Ionicons
+            name={tabIcons[route.name][focused ? 0 : 1]}
+            size={size}
+            color={color}
+        />
+    ),
+    tabBarActiveTintColor: 'tomato',
+    tabBarInactiveTintColor: 'gray',
+    headerShown: true,
 });
 
-export default App;
+export default function App() {
+    return (
+        <PaperProvider theme={theme}>
+            <InnerApp />
+        </PaperProvider>
+    );
+}
+
+function InnerApp() {
+    return (
+        <NavigationContainer>
+            <Nav.Navigator screenOptions={getScreenOptions}>
+                <Nav.Screen
+                    name="home"
+                    component={ButtonOnlyView}
+                    options={{title: 'Aloitusruutu'}}
+                />
+                <Nav.Screen
+                    name="other"
+                    component={TripForm}
+                    options={{title: 'Uusi matka'}}
+                />
+            </Nav.Navigator>
+        </NavigationContainer>
+    );
+}
+
+function ButtonOnlyView({navigation}) {
+    return (
+        <View>
+            <Button onPress={() => navigation.navigate('other')}>
+                Syötä matka
+            </Button>
+        </View>
+    );
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        backgroundColor: '#ffe0e0',
+    },
+    statusBar: {
+        animated: true,
+        backgroundColor: '#f080a0',
+        barStyle: 'default' as StatusBarStyle,
+    },
+    textInput: {
+        paddingTop: 10,
+        paddingBottom: 10,
+    },
+    buttonsContainer: {
+        padding: 10,
+    },
+    textStyle: {
+        textAlign: 'center',
+        marginBottom: 8,
+    },
+});
