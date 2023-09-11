@@ -10,6 +10,7 @@ import {
 } from 'react-native-paper';
 
 import TripForm from './components/TripForm';
+import TripList from './components/TripList';
 
 const theme = {
     ...DefaultTheme,
@@ -54,7 +55,7 @@ function InnerApp() {
             <Nav.Navigator screenOptions={getScreenOptions}>
                 <Nav.Screen
                     name="home"
-                    component={ButtonOnlyView}
+                    component={TripList}
                     options={{title: 'Aloitusruutu'}}
                 />
                 <Nav.Screen
