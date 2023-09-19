@@ -5,7 +5,6 @@ import {Button, SegmentedButtons, TextInput} from 'react-native-paper';
 import {Trip} from '../types/Trip';
 import {newId} from '../utils/newId';
 import { cleanNumberText, parseNumber } from '../utils/number';
-
 type Props = {
     onSubmit?: (trip: Trip) => void;
 };

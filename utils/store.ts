@@ -5,7 +5,12 @@ export function loadTrips(): Trip[] {
     trips.sort((a: Trip, b: Trip) => {
         return a.id > b.id ? -1 : a.id == b.id ? 0 : 1;
     });
+    // Pakota trips muuttuja vaihtumaan niin, että react huomaa sen
+    // muuttuneen.
+    trips = [...trips];
     return trips;
+
+    
 }
 
 export function saveTrip(trip: Trip): void {
